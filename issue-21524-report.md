@@ -182,7 +182,7 @@ It removes the need for unsafe casts in advanced Storybook configurations and fo
 
 ## Submit the Fix
 
-This pull request was submitted to :contentReference[oaicite:1]{index=1}:
+This pull request was submitted to:
 
-- **Pull Request:** #34677  
-- **Issue:** #21524
+- **Pull Request:** [#34677](https://github.com/storybookjs/storybook/pull/34677)
+- **Issue:** [#21524](https://github.com/storybookjs/storybook/issues/21524)
