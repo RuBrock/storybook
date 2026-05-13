@@ -1,3 +1,78 @@
+# Storybook
+<img width="1177" height="116" alt="Screenshot from 2026-05-13 15-36-59" src="https://github.com/user-attachments/assets/86a8263b-cf44-4874-9f1d-c944811635bb" />
+
+Storybook is an open-source frontend workshop for building UI components and pages in isolation. It is widely used by development teams to build, test, and document user interfaces efficiently.
+
+## How alive is the project?
+
+Storybook is an extremely active open-source project and remains the industry standard for UI component development. It has an active contributor community, frequent releases, ongoing feature improvements, and strong adoption across both startups and large technology companies.
+
+<img width="689" height="339" alt="Screenshot from 2026-05-13 15-37-21" src="https://github.com/user-attachments/assets/47288415-19e7-482f-b26c-fd1d8aef338a" />
+
+
+## How important is it?
+
+In modern frontend development, Storybook is considered one of the most important tools in a developer's workflow, alongside frontend frameworks such as React, Angular, or Vue, and package managers like npm or pnpm.
+
+It is used in production by major companies such as:
+
+- Pinterest
+- Vimeo
+- Mailchimp
+- Target
+- GitHub
+- Airbnb
+- Dropbox
+
+Its adoption demonstrates its importance in building scalable design systems and maintainable frontend applications.
+
+## What is it good for?
+
+Storybook allows developers to build and test UI components independently from the main application.
+
+Its main benefits include:
+
+- **Component Isolation** – Build components like buttons, forms, modals, and layouts without running the entire application.
+- **Visual Documentation** – Each component state is documented as a "story", making the UI easier to understand and maintain.
+- **Collaboration** – Designers, developers, and QA engineers can review components in a shared environment.
+- **Testing** – Supports visual regression testing, interaction testing, and accessibility testing.
+- **Reusability** – Helps teams create scalable and reusable design systems.
+
+Overall, Storybook improves development speed, consistency, and code quality in frontend projects.
+
+## Technologies Involved
+
+Storybook integrates with modern frontend technologies, including:
+
+### Frameworks
+
+- React
+- Vue.js
+- Angular
+- Svelte
+
+### Languages
+
+- JavaScript
+- TypeScript
+
+### Build Tools
+
+- Webpack
+- Vite
+
+### Testing & Styling Ecosystem
+
+- Jest
+- Testing Library
+- CSS Modules
+- Styled Components
+- Tailwind CSS
+
+This broad ecosystem support makes Storybook highly flexible for different frontend architectures.
+
+---
+
 ## CES Info
 
 ### Group Members
@@ -10,10 +85,11 @@
 
 ### Issues
 
-| Issue                                                           | Resources                           |
-| --------------------------------------------------------------- | ----------------------------------- |
+| Issue | Resources |
+|-------|-----------|
 | [#34258](https://github.com/storybookjs/storybook/issues/34258) | [Report doc](issue-34258-report.md) |
 | [#34566](https://github.com/storybookjs/storybook/issues/34566) | [Report doc](issue-34566-report.md) |
+| [#21524](https://github.com/storybookjs/storybook/issues/21524) | [Report doc](issue-21524-report.md) |
 
 ## Rest of the Original README
 
