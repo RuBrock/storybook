@@ -1,14 +1,20 @@
 # Storybook
-<img width="1177" height="116" alt="Screenshot from 2026-05-13 15-36-59" src="https://github.com/user-attachments/assets/86a8263b-cf44-4874-9f1d-c944811635bb" />
 
-Storybook is an open-source frontend workshop for building UI components and pages in isolation. It is widely used by development teams to build, test, and document user interfaces efficiently.
+## CES Info
+
+### Group Members
+
+| Student               | ID        |
+| --------------------- | --------- |
+| Beatriz Oziel de Lima | 202510621 |
+| Rubens Brock Silva    | 202510624 |
+| Matvii Suk            | 202514197 |
 
 ## How alive is the project?
 
 Storybook is an extremely active open-source project and remains the industry standard for UI component development. It has an active contributor community, frequent releases, ongoing feature improvements, and strong adoption across both startups and large technology companies.
 
 <img width="689" height="339" alt="Screenshot from 2026-05-13 15-37-21" src="https://github.com/user-attachments/assets/47288415-19e7-482f-b26c-fd1d8aef338a" />
-
 
 ## How important is it?
 
@@ -71,25 +77,37 @@ Storybook integrates with modern frontend technologies, including:
 
 This broad ecosystem support makes Storybook highly flexible for different frontend architectures.
 
----
+## Issues
 
-## CES Info
-
-### Group Members
-
-| Student               | ID        |
-| --------------------- | --------- |
-| Beatriz Oziel de Lima | 202510621 |
-| Rubens Brock Silva    | 202510624 |
-| Matvii Suk            | 202514197 |
-
-### Issues
-
-| Issue | Resources |
-|-------|-----------|
+| Issue                                                           | Resources                           |
+| --------------------------------------------------------------- | ----------------------------------- |
 | [#34258](https://github.com/storybookjs/storybook/issues/34258) | [Report doc](issue-34258-report.md) |
 | [#34566](https://github.com/storybookjs/storybook/issues/34566) | [Report doc](issue-34566-report.md) |
 | [#21524](https://github.com/storybookjs/storybook/issues/21524) | [Report doc](issue-21524-report.md) |
+
+## Project Maintainability Status
+
+Working on the three issues gave us a decent view into how maintainable Storybook actually is in practice. Overall impression: it's a well-run project, but it's also very large, and that scale creates blind spots.
+
+| Artefact                       | Rating | Notes                                                                                                                                                                                                                                                                                             |
+| ------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Documentation                  | A      | CONTRIBUTING.md is thorough. The main gap we hit is that TypeScript types can lag behind runtime behavior. Issue [#21524](issue-21524-report.md) is a clear example of that.                                                                                                                      |
+| Source code quality            | B      | The code is clean and well-structured. That said, identical patterns quietly spread across six framework packages without anyone noticing ([#34258](issue-34258-report.md)). The architecture is sound, but at this scale some duplication slips through.                                         |
+| Error handling / observability | C      | Generic catch-all error buckets make debugging harder than it needs to be. Issue [#34566](issue-34566-report.md) showed that a real, categorizable failure was being swallowed by `UncaughtManagerError`. The infrastructure to fix it was already there, it just wasn't being used consistently. |
+| Community support              | A      | Maintainers respond quickly, issues are well-labeled, and the Discord is active. Finding a "good first issue" to work on was kind of straightforward, and PR feedback came fast.                                                                                                                  |
+| Architecture                   | B      | The renderer/builder/framework separation is clean and NX manages task dependencies well. The monorepo structure makes sense for a project this size. The downside is that cross-package patterns can diverge without any tooling catching it.                                                    |
+
+### Concrete improvement suggestions
+
+**Types:** Run a periodic audit comparing public type signatures against integration tests or runtime behavior. Issue [#21524](issue-21524-report.md) could have been caught by a test that actually exercises the async path through TypeScript's compiler.
+
+**Error handling:** Add a lint rule or architectural review step to flag plain `TypeError` throws in manager-side code. The `StorybookError` base class exists, it should be the default, not the exception.
+
+**Cross-package duplication:** The `createCorePreset` factory we introduced in [#34258](issue-34258-report.md) is a step in the right direction, but there's no automated check that prevents the old pattern from coming back in new framework packages. A custom ESLint rule or a structural test would help enforce the pattern going forward.
+
+**Documentation:** Version-stamp the more complex behavioral docs (like how async story resolvers work). Type definitions that diverge from runtime docs are easy to miss during a code review.
+
+---
 
 ## Rest of the Original README
 

@@ -14,11 +14,9 @@ When a `UniversalStore` follower times out waiting for a leader (e.g., `storyboo
 Uncaught (in promise) TypeError: No existing state found for follower with id: 'storybook/status'. Make sure a leader with the same id exists before creating a follower.
 ```
 
-This error was caught by the generic `UncaughtManagerError` handler in `prepareForTelemetry.ts`, which wrapped it as `SB_MANAGER_UNCAUGHT_0001`. Because the error was a plain `TypeError` rather than a `StorybookError`, it was bucketed into a generic catch-all category.
+This error was caught by the generic `UncaughtManagerError` handler in `prepareForTelemetry.ts`, which wrapped it as `SB_MANAGER_UNCAUGHT_0001`. Because it was a plain `TypeError` rather than a `StorybookError`, it fell into a catch-all bucket.
 
-This made it impossible to distinguish this specific failure (a common network or initialization timeout) from other genuine uncaught exceptions in telemetry and error reports.
-
-This fix introduces a dedicated `UniversalStoreError` hierarchy and specifically categorizes the follower timeout under its own category, allowing for better tracking and triaging.
+That made it impossible to tell this specific failure (a timeout waiting for a leader) apart from any other uncaught exception in telemetry. Our fix gives the follower timeout its own error class, so it can be tracked and triaged separately.
 
 ## Requirements
 
@@ -46,13 +44,13 @@ This fix introduces a dedicated `UniversalStoreError` hierarchy and specifically
 
 ### Strategy
 
-The fix follows a modular "Error Colocation" strategy. Instead of cluttering the global `manager-errors.ts` with logic-specific error classes, we define them close to the code that throws them.
+Rather than adding error classes to the global `manager-errors.ts`, we defined them next to the code that throws them — in `universal-store/errors.ts`. This keeps the error logic colocated with the store implementation.
 
-1.  **Hierarchy:** We created an abstract `UniversalStoreError` that sets the category to `MANAGER_UNIVERSAL-STORE` for all its children. This reduces duplication as every specific error (timeout, id required, etc.) inherits the category.
-2.  **Telemetry Integration:** By inheriting from `StorybookError`, these classes automatically gain the ability to be serialized and reported with unique error codes.
-3.  **Refinement via Review:** Following an architectural review, we ensured that:
-    - Relative imports use explicit `.ts` extensions to satisfy the ESM builder.
-    - User-facing messages point to the `untilReady()` Promise-returning method, which is the idiomatic way to wait for store synchronization.
+The abstract `UniversalStoreError` base class sets the category `MANAGER_UNIVERSAL-STORE` once, so every specific error (timeout, missing ID, etc.) inherits it without duplication. Subclassing `StorybookError` gets us telemetry serialization and unique error codes for free.
+
+After a code review pass, we also made sure:
+- All relative imports use explicit `.ts` extensions (required by the ESM builder).
+- User-facing messages point to `untilReady()` as the right way to wait for store readiness.
 
 ### Diagrams
 

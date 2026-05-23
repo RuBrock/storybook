@@ -28,9 +28,9 @@ export const core: PresetProperty<'core'> = async (config, options) => {
 };
 ```
 
-The duplicated inline ternary `typeof framework === 'string' ? {} : framework.options.builder || {}` was the primary concern raised in the issue. However, the broader structural duplication, the full `core` preset handler pattern, is a deeper maintainability problem where any future change to how the `core` preset is constructed (e.g., adding a new field, changing how the framework is resolved, or changing the builder options merge strategy) must be applied to six separate files.
+The duplicated inline ternary `typeof framework === 'string' ? {} : framework.options.builder || {}` was the primary concern in the issue. But the real problem is the full `core` preset handler pattern being copied six times — any future change (new field, different merge strategy, different resolution logic) has to be applied to all six files.
 
-This is a **maintainability issue**, not a functional defect. All six implementations were equivalent at the time of discovery, but that equivalence is accidental and fragile.
+This is a **maintainability issue**, not a functional bug. All six implementations matched at the time of discovery, but that's by coincidence. They'll drift.
 
 ## Requirements
 
@@ -89,16 +89,16 @@ Two helpers are introduced, both in `code/core/src/common/utils/get-builder-opti
 
 2. **`createCorePreset(options: CreateCorePresetOptions)`** — a factory function that encapsulates the entire `core` preset handler pattern. It calls `getFrameworkBuilderOptions` internally. Framework packages use this factory instead of writing the full async function, expressing only what is unique to them: the builder name, an optional renderer name, and an optional async hook.
 
-Placing both in `get-builder-options.ts` is appropriate because:
+Both helpers go in `get-builder-options.ts` because:
 
-- The file already handles the closely related concern of resolving builder options.
-- `createCorePreset` depends directly on `getFrameworkBuilderOptions`.
-- The existing barrel re-export in `index.ts` includes both automatically.
-- All six framework packages can already import from `storybook/internal/common`.
+- That file already handles builder option resolution — adding related logic there keeps things cohesive.
+- `createCorePreset` depends on `getFrameworkBuilderOptions`, so they belong together.
+- The barrel re-export in `index.ts` picks them up automatically.
+- All six framework packages already import from `storybook/internal/common`.
 
 ### The `beforeReturn` hook
 
-Most framework presets map cleanly onto the `{ builderName, rendererName }` pattern. The Next.js webpack preset is an exception: it must call `configureConfig(...)` after resolving the framework but before returning. Rather than leaving Next.js outside the factory (which would create an inconsistency), the `beforeReturn` hook allows this side effect to be expressed as part of the factory call while keeping the factory itself generic.
+Most frameworks fit neatly into the `{ builderName, rendererName }` pattern. Next.js webpack is the exception — it needs to call `configureConfig(...)` after resolving the framework but before returning. The `beforeReturn` hook handles that without kicking Next.js out of the factory entirely.
 
 ### Diagrams
 

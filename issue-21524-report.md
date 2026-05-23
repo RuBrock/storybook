@@ -2,14 +2,11 @@
 
 ## Issue
 
-> **Project:** :contentReference[oaicite:0]{index=0}  
-> **Issue:** #21524 — *StoriesEntry type does not allow for custom implementation with async function*  
-> **Pull Request:** #34677  
+> **Project:** [Storybook](https://github.com/storybookjs/storybook)
+> **Issue:** [#21524 — StoriesEntry type does not allow for custom implementation with async function](https://github.com/storybookjs/storybook/issues/21524)
 > **Status:** Implemented, pull request submitted.
 
-The Storybook configuration system allows users to provide custom implementations for the `stories` field in `.storybook/main.ts`, enabling advanced story discovery logic.
-
-At the time this issue was filed, Storybook's runtime behavior already supported asynchronous story resolvers such as:
+The `stories` field in `.storybook/main.ts` accepts custom resolver functions for advanced story discovery. When this issue was filed, Storybook already ran async resolvers correctly at runtime — the problem was that the TypeScript definition of `StoriesEntry` didn't allow them.
 
 ```ts
 stories: async (list) => {
@@ -18,29 +15,21 @@ stories: async (list) => {
 }
 ```
 
-However, the TypeScript definition of `StoriesEntry` did not permit this usage.
+So the type system and the actual runtime were out of sync: async functions worked fine when executed, but TypeScript flagged them as errors. Users had to work around it with type assertions or just ignore the compiler noise.
 
-This created an inconsistency between:
-
-- The actual runtime behavior (async functions worked correctly)
-- The public TypeScript API (async functions produced type errors)
-
-As a result, users attempting valid async custom story loading received incorrect compile-time errors, forcing them to use type assertions or unsafe workarounds.
-
-This is primarily a **type system/API consistency bug**, not a runtime implementation defect.
+This is a **type system/API consistency bug**, not a runtime issue.
 
 ---
 
 ## Requirements
 
-The fix needed to satisfy the following requirements:
+The fix had to:
 
-- Preserve existing synchronous `stories` implementations.
-- Allow asynchronous custom story resolvers returning promises.
-- Avoid breaking existing consumers of the `StoriesEntry` type.
-- Keep runtime behavior unchanged.
-- Update type definitions only where necessary.
-- Validate that async usage compiles successfully.
+- Keep existing synchronous `stories` implementations working.
+- Allow async resolvers that return promises.
+- Not break any existing consumers of `StoriesEntry`.
+- Leave runtime behavior exactly as is.
+- Validate that the async usage actually compiles.
 
 ---
 
@@ -92,9 +81,7 @@ This issue represents a **runtime/type contract divergence**.
 
 ### Strategy
 
-The solution was to extend the `StoriesEntry` function signature so that it accepts both synchronous and asynchronous return values.
-
-Conceptually:
+We extended the `StoriesEntry` function signature to accept both synchronous and asynchronous return values.
 
 **Before**
 
@@ -108,12 +95,7 @@ Conceptually:
 (entries) => StoriesSpecifier[] | Promise<StoriesSpecifier[]>
 ```
 
-This approach was chosen because:
-
-- It preserves backward compatibility.
-- It aligns the type system with actual runtime behavior.
-- It introduces zero runtime behavior changes.
-- It minimizes implementation scope.
+The change is purely additive — existing sync implementations still work, runtime behavior is unchanged, and the type now matches what Storybook was already doing in practice.
 
 ---
 
@@ -174,9 +156,7 @@ without TypeScript errors.
 
 ## Impact
 
-This fix improves Storybook's developer experience by ensuring that the public TypeScript API matches the runtime capabilities already supported by the framework.
-
-It removes the need for unsafe casts in advanced Storybook configurations and formally supports asynchronous story discovery patterns.
+After this fix, users can write async story resolvers without TypeScript errors and without reaching for type assertions. The public API finally matches what the runtime already supported.
 
 ---
 
@@ -184,5 +164,4 @@ It removes the need for unsafe casts in advanced Storybook configurations and fo
 
 This pull request was submitted to:
 
-- **Pull Request:** [#34677](https://github.com/storybookjs/storybook/pull/34677)
-- **Issue:** [#21524](https://github.com/storybookjs/storybook/issues/21524)
+This Pull Request [storybook!34677](https://github.com/storybookjs/storybook/pull/34677) was submitted to Storybook project's Github.
