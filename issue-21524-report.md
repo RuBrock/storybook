@@ -164,4 +164,4 @@ After this fix, users can write async story resolvers without TypeScript errors 
 
 This pull request was submitted to:
 
-This Pull Request [storybook!34677](https://github.com/storybookjs/storybook/pull/34677) was submitted to Storybook project's Github.
+This Pull Request [storybook!34899](https://github.com/storybookjs/storybook/pull/34899) was submitted to Storybook project's Github.
